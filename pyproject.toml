@@ -1,0 +1,30 @@
+[project]
+name = "python-agent-manager-ui"
+version = "0.1.0"
+description = "A Flask-based Kanban dashboard for managing Python scripts"
+requires-python = ">=3.10"
+dependencies = [
+    "flask",
+]
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "ruff",
+    "mypy",
+]
+
+[tool.black]
+line-length = 88
+target-version = ['py310']
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+select = ["E", "F", "I", "N", "W"]
+
+[tool.mypy]
+python_version = "3.10"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true

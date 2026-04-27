@@ -1,0 +1,16 @@
+[INFO] Starting price scraper
+[INFO] Target: shop.example.com
+[INFO] Fetching page 1/4…
+[OK] Page 1/4 scraped (55 items)
+[INFO] Fetching page 2/4…
+[OK] Page 2/4 scraped (50 items)
+[INFO] Fetching page 3/4…
+[WARN] Rate limit detected — sleeping 2s
+[OK] Page 3/4 scraped (54 items)
+[INFO] Fetching page 4/4…
+[OK] Page 4/4 scraped (54 items)
+[DEBUG] Raw counts: [55, 50, 54, 54]
+[OK] Total items collected: 213
+[INFO] Saving results to prices.json…
+[OK] prices.json written successfully
+[OK] Scraper finished — 213 products processed

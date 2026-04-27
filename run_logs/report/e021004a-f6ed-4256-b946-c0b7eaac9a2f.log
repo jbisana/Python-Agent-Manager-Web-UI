@@ -1,0 +1,8 @@
+[INFO] Generating weekly report…
+[DEBUG] Date range: last 7 days
+[OK] Revenue: $15,560
+[OK] New users: 464
+[WARN] Churn rate high: 4.3%
+[INFO] Rendering PDF…
+[OK] report_2025_w18.pdf generated
+[OK] Report emailed to team@company.com

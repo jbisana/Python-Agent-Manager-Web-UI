@@ -1,0 +1,38 @@
+{
+  "_comment": "Optional metadata overrides for scripts in tasks/. Keys must match the .py filename (without extension).",
+  "backup": {
+    "display_name": "Backup",
+    "category": "maintenance",
+    "description": "Runs a scheduled backup task"
+  },
+  "scraper": {
+    "display_name": "Market Scraper",
+    "category": "data",
+    "description": "Fetches OHLCV and market data from exchange APIs"
+  },
+  "report": {
+    "display_name": "Report Generator",
+    "category": "reports",
+    "description": "Generates daily performance reports"
+  },
+  "pipeline": {
+    "display_name": "Trading Pipeline",
+    "category": "trading",
+    "description": "Main trading signal pipeline"
+  },
+  "fastloopNEW": {
+    "display_name": "Fast Loop",
+    "category": "trading",
+    "description": "High-frequency market monitoring loop"
+  },
+  "nyvwapfastloop": {
+    "display_name": "VWAP Fast Loop",
+    "category": "trading",
+    "description": "VWAP-based intraday monitoring loop"
+  },
+  "smarttape": {
+    "display_name": "Smart Tape",
+    "category": "monitoring",
+    "description": "Smart tape reading and order flow analysis"
+  }
+}
