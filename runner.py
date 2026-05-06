@@ -4,6 +4,8 @@ import time
 import os
 import queue
 import logging
+import psutil
+import requests
 from typing import Dict, Optional
 from config import Config
 from models import ScriptState, ScriptStatus, ScriptMetadata
@@ -58,8 +60,21 @@ class ProcessManager:
         if meta.env:
             env.update(meta.env)
 
+        # Determine python interpreter
+        python_exe = "python"
+        if meta.venv_path:
+            # Check for common venv executable locations (Windows vs Unix)
+            potential_exes = [
+                os.path.join(meta.venv_path, "Scripts", "python.exe"),
+                os.path.join(meta.venv_path, "bin", "python"),
+            ]
+            for exe in potential_exes:
+                if os.path.exists(exe):
+                    python_exe = exe
+                    break
+
         # Prepare command
-        cmd = ["python", "-u", full_path]
+        cmd = [python_exe, "-u", full_path]
         if meta.args:
             cmd.extend(meta.args)
 
@@ -90,6 +105,25 @@ class ProcessManager:
 
                 if timeout_secs and timeout_secs > 0:
                     threading.Thread(target=timeout_watchdog, daemon=True).start()
+
+                def resource_monitor():
+                    try:
+                        p = psutil.Process(proc.pid)
+                        while proc.poll() is None:
+                            try:
+                                cpu = p.cpu_percent(interval=1)
+                                mem = p.memory_info().rss / (1024 * 1024) # MB
+                                state.cpu_usage = cpu
+                                state.mem_usage = round(mem, 1)
+                                q.put({"type": "stats", "cpu": cpu, "mem": state.mem_usage})
+                            except (psutil.NoSuchProcess, psutil.AccessDenied):
+                                break
+                    except Exception:
+                        pass
+                    state.cpu_usage = 0.0
+                    state.mem_usage = 0.0
+
+                threading.Thread(target=resource_monitor, daemon=True).start()
 
                 try:
                     for raw_line in proc.stdout:
@@ -153,6 +187,21 @@ class ProcessManager:
                 "exit_code":   exit_code,
                 "stop_reason": stop_reason,
             })
+
+            # Webhook trigger
+            if meta.webhook_url:
+                try:
+                    payload = {
+                        "script": key,
+                        "status": state.status.value,
+                        "elapsed": state.elapsed,
+                        "exit_code": exit_code,
+                        "stop_reason": stop_reason,
+                        "run_id": run_id
+                    }
+                    threading.Thread(target=lambda: requests.post(meta.webhook_url, json=payload, timeout=10), daemon=True).start()
+                except Exception as e:
+                    logger.error(f"Failed to trigger webhook for {key}: {e}")
 
     def stale_watcher(self):
         while True:

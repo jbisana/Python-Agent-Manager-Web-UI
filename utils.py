@@ -66,6 +66,8 @@ def discover_scripts() -> dict[str, ScriptMetadata]:
             timeout=timeout,
             abs_path=abs_path,
             schedule=meta_override.get("schedule"),
+            venv_path=meta_override.get("venv_path"),
+            webhook_url=meta_override.get("webhook_url"),
             env=meta_override.get("env", {}),
             args=meta_override.get("args", [])
         )

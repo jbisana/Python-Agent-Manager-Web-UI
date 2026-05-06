@@ -247,6 +247,47 @@ def get_run_log(key: str, run_id: str):
     lines = load_log_file(key, run_id)
     return jsonify({"run_id": run_id, "lines": lines})
 
+@app.route("/api/history/clear/<key>", methods=["POST"])
+@csrf_protected
+@rate_limited
+def clear_history(key: str):
+    from database import db_clear_script_history
+    if key not in manager.script_state:
+        return jsonify({"error": "Unknown script"}), 404
+    
+    state = manager.script_state[key]
+    if state.status == ScriptStatus.RUNNING:
+        return jsonify({"error": "Cannot clear history while running"}), 409
+
+    db_clear_script_history(key)
+    # Reset local memory state
+    manager.script_state[key] = ScriptState()
+    return jsonify({"ok": True})
+
+@app.route("/api/git/pull", methods=["POST"])
+@csrf_protected
+@rate_limited
+def git_pull():
+    try:
+        import subprocess
+        # Run git pull
+        result = subprocess.run(["git", "pull"], capture_output=True, text=True, timeout=30)
+        if result.returncode != 0:
+            return jsonify({"error": f"Git pull failed: {result.stderr}"}), 500
+        
+        # Reload metadata and scripts
+        global SCRIPTS
+        SCRIPTS = discover_scripts()
+        manager.set_scripts(SCRIPTS)
+        scheduler.sync_schedules(SCRIPTS)
+        for key in SCRIPTS:
+            if key not in manager.script_state:
+                manager.script_state[key] = ScriptState()
+        
+        return jsonify({"ok": True, "output": result.stdout})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 @app.route("/api/health")
 def health():
     running = [k for k, s in manager.script_state.items() if s.status == ScriptStatus.RUNNING]

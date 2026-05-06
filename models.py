@@ -22,6 +22,8 @@ class ScriptMetadata:
     timeout: int
     abs_path: str
     schedule: Optional[str] = None  # cron expression or "every X minutes"
+    venv_path: Optional[str] = None
+    webhook_url: Optional[str] = None
     env: dict[str, str] = field(default_factory=dict)
     args: list[str] = field(default_factory=list)
 
@@ -39,6 +41,8 @@ class ScriptState:
     stop_reason: Optional[str] = None
     exit_code: Optional[int] = None
     schedule_disabled: bool = False
+    cpu_usage: float = 0.0
+    mem_usage: float = 0.0
 
     def to_dict(self, key: str, meta: ScriptMetadata) -> dict:
         return {
@@ -56,6 +60,10 @@ class ScriptState:
             "exit_code":   self.exit_code,
             "schedule":    meta.schedule,
             "schedule_disabled": self.schedule_disabled,
+            "cpu_usage": self.cpu_usage,
+            "mem_usage": self.mem_usage,
             "env":         meta.env,
             "args":        meta.args,
+            "venv_path":   meta.venv_path,
+            "webhook_url": meta.webhook_url,
         }

@@ -1,0 +1,8 @@
+# Logs
+*.log
+logs/
+run_logs/
+__pycache__/
+*.db
+GEMINI.md
+AGENTS.md

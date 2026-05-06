@@ -93,3 +93,7 @@ def db_get_script_stats(key: str) -> dict:
         "max_duration": round(row["max_duration"] or 0, 1),
         "error_count": row["error_count"]
     }
+
+def db_clear_script_history(key: str):
+    with get_db() as con:
+        con.execute("DELETE FROM runs WHERE script_key=?", (key,))
