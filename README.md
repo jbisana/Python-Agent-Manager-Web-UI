@@ -13,6 +13,8 @@ Python Script Manager provides a modular web interface to manage a fleet of Pyth
 
 Designed for operational reliability, it uses a clean architecture with a persistent SQLite backend to ensure your automation workflows remain observable and recoverable.
 
+<img width="1274" height="972" alt="Untitled picture" src="https://github.com/user-attachments/assets/77dfcc60-fe0e-4aa5-b872-324e16040741" />
+
 ## 🚀 Key Features
 
 - **Automated Script Discovery**: Drop any `.py` file into the `tasks/` directory, and it appears on your dashboard instantly.
